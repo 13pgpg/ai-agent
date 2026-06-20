@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python -c \"import langchain.agents; print\\(langchain.agents.__file__\\)\")",
+      "Bash(python -c \"from langchain.agents import create_tool_calling_agent; import inspect; print\\(inspect.getfile\\(create_tool_calling_agent\\)\\)\")",
+      "Bash(pip show *)",
+      "Bash(python -c \"import os, ast; root='D:/Miniconda/Lib/site-packages'; results=[]; [results.append\\(os.path.join\\(d,f\\)\\) for d,_,fs in os.walk\\(root\\) for f in fs if f.endswith\\('.py'\\) for l in open\\(os.path.join\\(d,f\\),encoding='utf-8',errors='ignore'\\) if 'def create_tool_calling_agent' in l]; print\\('\\\\n'.join\\(results[:10]\\) if results else 'NOT FOUND'\\)\")"
+    ]
+  }
+}

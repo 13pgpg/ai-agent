@@ -1,0 +1,182 @@
+[
+  {
+    "category": "technical",
+    "position_tag": "ai_application",
+    "difficulty": "easy",
+    "question": "什么是 RAG？它相比直接把问题发给大模型有什么优势？",
+    "reference_answer": "RAG 是 Retrieval-Augmented Generation，即检索增强生成。它会先从外部知识库中检索与问题相关的文档片段，再把这些上下文和用户问题一起交给大模型生成答案。相比直接问大模型，RAG 可以引入私有知识、降低幻觉、提升答案可追溯性，并且知识更新不一定需要重新训练模型。",
+    "key_points": ["检索增强生成", "先检索再生成", "引入私有知识", "降低幻觉", "知识更新成本低"],
+    "tags": ["RAG", "LLM", "知识库", "检索增强"]
+  },
+  {
+    "category": "technical",
+    "position_tag": "ai_application",
+    "difficulty": "medium",
+    "question": "请说明一个典型 RAG 系统从文档上传到回答问题的完整流程。",
+    "reference_answer": "典型流程包括：文档上传后进行文本抽取和清洗；使用分块策略将长文档切成 chunk；调用 Embedding 模型把 chunk 转为向量；将文本、元数据和向量写入向量数据库；用户提问时对 query 生成向量；在向量库中做相似度检索；取 TopK 片段作为上下文拼接 Prompt；最后调用大模型生成回答。",
+    "key_points": ["文档解析", "文本分块", "Embedding 向量化", "向量数据库", "TopK 检索", "上下文增强生成"],
+    "tags": ["RAG流程", "Embedding", "向量数据库", "Prompt"]
+  },
+  {
+    "category": "technical",
+    "position_tag": "ai_application",
+    "difficulty": "medium",
+    "question": "RAG 中 chunk size 和 overlap 应该如何选择？过大或过小会有什么问题？",
+    "reference_answer": "chunk size 需要在语义完整性和检索精度之间平衡。过小会导致上下文碎片化，答案缺少完整信息；过大则会引入噪声，降低检索精度并增加 token 成本。overlap 用于缓解切分边界导致的信息丢失，但 overlap 过大会增加存储和向量化成本。实际应结合文档类型、模型上下文长度和检索效果调参。",
+    "key_points": ["语义完整性", "检索精度", "过小会碎片化", "过大会引入噪声", "overlap 缓解边界丢失"],
+    "tags": ["chunk", "overlap", "文本切分", "RAG调优"]
+  },
+  {
+    "category": "technical",
+    "position_tag": "ai_application",
+    "difficulty": "medium",
+    "question": "Embedding 模型在 RAG 中的作用是什么？为什么向量维度要和数据库字段匹配？",
+    "reference_answer": "Embedding 模型负责把文本映射到向量空间，使语义相近的文本在向量空间中距离更近。RAG 使用 query 向量和文档向量做相似度计算，从而召回相关内容。向量维度必须与数据库字段一致，例如模型输出 1024 维，数据库字段就应是 vector(1024)，否则写入或检索会因为维度不匹配而失败。",
+    "key_points": ["文本转向量", "语义相似度", "query 向量", "文档向量", "维度必须匹配"],
+    "tags": ["Embedding", "pgvector", "向量维度", "语义检索"]
+  },
+  {
+    "category": "technical",
+    "position_tag": "ai_application",
+    "difficulty": "medium",
+    "question": "向量检索中的 cosine similarity、L2 distance 和 inner product 有什么区别？",
+    "reference_answer": "cosine similarity 关注向量夹角，适合衡量语义方向相似度；L2 distance 关注欧氏距离，受向量长度影响较大；inner product 计算向量点积，也会受向量长度影响。很多文本语义检索场景会使用 cosine similarity，因为它更关注语义方向。具体选择要结合 Embedding 模型训练方式和向量数据库支持情况。",
+    "key_points": ["cosine 关注夹角", "L2 关注欧氏距离", "inner product 是点积", "文本检索常用 cosine", "取决于模型训练方式"],
+    "tags": ["向量检索", "cosine", "L2", "相似度"]
+  },
+  {
+    "category": "technical",
+    "position_tag": "ai_application",
+    "difficulty": "hard",
+    "question": "如果 RAG 检索结果相关性不高，你会从哪些方面排查和优化？",
+    "reference_answer": "可以从 query 构造、文档切分、Embedding 模型、向量索引、过滤条件和重排序几个方面排查。首先检查 query 是否包含足够业务关键词；其次检查 chunk 是否过大或过小；再确认 Embedding 模型是否适合中文和业务领域；检查 min_score、TopK、岗位标签等过滤条件是否过严；必要时加入关键词检索、混合检索、rerank 模型或基于大模型的 query rewrite。",
+    "key_points": ["query 构造", "chunk 策略", "Embedding 模型", "TopK 和阈值", "过滤条件", "混合检索", "rerank"],
+    "tags": ["RAG优化", "召回率", "rerank", "混合检索"]
+  },
+  {
+    "category": "technical",
+    "position_tag": "ai_application",
+    "difficulty": "medium",
+    "question": "Agent 和普通 LLM 调用的区别是什么？Agent 通常由哪些部分组成？",
+    "reference_answer": "普通 LLM 调用通常是输入 Prompt 后得到一次生成结果，而 Agent 会围绕目标进行规划、工具选择、工具调用、观察结果和继续决策。Agent 通常包括大模型、工具集、Prompt/系统指令、记忆或上下文、执行器和停止条件。它的核心价值是让模型具备一定的流程编排和外部系统调用能力。",
+    "key_points": ["不只是单次生成", "目标驱动", "工具调用", "观察结果", "执行器", "流程编排"],
+    "tags": ["Agent", "工具调用", "LLM", "流程编排"]
+  },
+  {
+    "category": "technical",
+    "position_tag": "ai_application",
+    "difficulty": "hard",
+    "question": "在一个同时包含 Agent 和 RAG 的系统中，两者应该如何分工？",
+    "reference_answer": "RAG 主要负责知识增强，解决外部知识检索、私有数据召回和回答依据问题；Agent 主要负责流程决策和工具编排，例如判断用户意图、选择检索工具、调用业务 API、决定下一步动作。一个合理架构中，Agent 可以决定什么时候检索、检索什么内容、是否需要追问，而 RAG 提供高质量上下文给大模型生成或评估。",
+    "key_points": ["RAG 负责知识增强", "Agent 负责流程决策", "工具编排", "检索时机", "业务闭环"],
+    "tags": ["Agent", "RAG", "架构设计", "业务流程"]
+  },
+  {
+    "category": "project",
+    "position_tag": "ai_application",
+    "difficulty": "medium",
+    "question": "如果让你设计一个 AI 面试系统，如何把 Agent 和 RAG 融合到同一条业务链路中？",
+    "reference_answer": "可以先用大模型解析简历，构建候选人画像；Agent 根据画像调用岗位匹配工具，推荐合适岗位和面试方向；然后 RAG 从题库中按岗位、技能、难度召回候选题；大模型结合简历和题库结果生成个性化问题；用户回答后再结合参考答案、关键点和知识库内容评分；最后生成报告。Agent 负责流程编排，RAG 负责内容依据。",
+    "key_points": ["简历解析", "岗位匹配 Agent", "题库 RAG", "个性化出题", "答案评分", "报告生成"],
+    "tags": ["AI面试", "Agent+RAG", "项目设计", "业务闭环"]
+  },
+  {
+    "category": "technical",
+    "position_tag": "ai_application",
+    "difficulty": "medium",
+    "question": "Prompt 工程在 RAG 系统中有哪些注意事项？",
+    "reference_answer": "RAG Prompt 需要明确区分用户问题和检索上下文，要求模型优先基于上下文回答，避免编造；当上下文不足时应说明无法确定；还要控制输出格式，例如 JSON 或 Markdown。上下文片段应尽量带来源、标题或元数据，便于模型理解。对于评分场景，Prompt 还应明确评分标准、参考答案、关键点和输出结构。",
+    "key_points": ["区分问题和上下文", "基于上下文回答", "上下文不足不编造", "输出格式约束", "评分标准"],
+    "tags": ["Prompt", "RAG", "输出格式", "幻觉控制"]
+  },
+  {
+    "category": "technical",
+    "position_tag": "ai_application",
+    "difficulty": "hard",
+    "question": "如何评估一个 RAG 系统的效果？可以从哪些指标入手？",
+    "reference_answer": "可以从检索和生成两个层面评估。检索层面包括 Recall@K、Precision@K、MRR、命中率、相似度分布；生成层面包括答案正确性、忠实性、完整性、引用依据、幻觉率和用户满意度。还可以构建标准问答集，比较不同 chunk 参数、Embedding 模型、TopK、rerank 策略下的效果。",
+    "key_points": ["Recall@K", "Precision@K", "MRR", "答案忠实性", "幻觉率", "标准评测集"],
+    "tags": ["RAG评估", "Recall", "Precision", "幻觉率"]
+  },
+  {
+    "category": "technical",
+    "position_tag": "ai_application",
+    "difficulty": "medium",
+    "question": "RAG 系统为什么需要 metadata？常见 metadata 包括哪些？",
+    "reference_answer": "metadata 用于描述 chunk 的来源和业务属性，方便过滤、排序、展示和追踪。常见 metadata 包括 document_id、标题、文件名、页码、chunk_index、分类、标签、岗位、难度、创建时间和上传人。检索时可以结合 metadata 做过滤，例如只检索某岗位、某分类或启用状态的数据。",
+    "key_points": ["描述来源", "方便过滤", "方便追踪", "document_id", "分类标签", "业务筛选"],
+    "tags": ["metadata", "RAG", "过滤", "知识库"]
+  },
+  {
+    "category": "technical",
+    "position_tag": "ai_application",
+    "difficulty": "hard",
+    "question": "什么是混合检索？为什么有时要结合关键词检索和向量检索？",
+    "reference_answer": "混合检索通常是结合关键词检索和向量语义检索。向量检索擅长语义相似，但可能漏掉精确术语、代码符号、版本号；关键词检索擅长精确匹配，但对同义表达不敏感。混合检索可以提高召回稳定性，再通过 rerank 对候选结果重排，兼顾语义相关性和关键词命中。",
+    "key_points": ["关键词检索", "向量检索", "精确匹配", "语义相似", "rerank", "提升召回"],
+    "tags": ["混合检索", "BM25", "向量检索", "rerank"]
+  },
+  {
+    "category": "technical",
+    "position_tag": "ai_application",
+    "difficulty": "medium",
+    "question": "Celery 在 AI 应用中适合处理哪些任务？为什么题库向量化适合异步执行？",
+    "reference_answer": "Celery 适合处理耗时、可异步、可重试的任务，例如邮件发送、批量文档解析、批量向量化、报告生成和定时任务。题库向量化需要调用外部 Embedding API，耗时且可能失败，如果同步执行会阻塞管理端请求。异步提交后用户可以继续操作，后台任务完成后再更新 embedding。",
+    "key_points": ["耗时任务", "异步执行", "可重试", "Embedding API", "避免阻塞请求", "后台处理"],
+    "tags": ["Celery", "异步任务", "向量化", "Embedding"]
+  },
+  {
+    "category": "technical",
+    "position_tag": "ai_application",
+    "difficulty": "medium",
+    "question": "在 AI 应用中，如何处理大模型返回的 JSON 格式不稳定问题？",
+    "reference_answer": "可以在 Prompt 中明确要求只输出 JSON，并给出 schema 示例；后端解析时先尝试直接 json.loads，如果失败可以提取第一个 JSON 对象或数组；还可以使用 Pydantic 做结构校验，对缺失字段设置默认值；必要时增加一次修复 Prompt，让模型把非法 JSON 修复为合法 JSON。生产环境还要记录原始响应便于排查。",
+    "key_points": ["Prompt 约束", "JSON schema 示例", "容错提取", "Pydantic 校验", "修复 Prompt", "日志记录"],
+    "tags": ["JSON解析", "Prompt", "Pydantic", "LLM稳定性"]
+  },
+  {
+    "category": "technical",
+    "position_tag": "ai_application",
+    "difficulty": "hard",
+    "question": "如何降低 RAG 系统中的幻觉问题？",
+    "reference_answer": "可以从检索质量和生成约束两方面降低幻觉。检索侧提高召回相关性，使用合理 chunk、Embedding、TopK、过滤和 rerank；生成侧要求模型基于上下文回答，不确定时说明无法判断，并限制输出结构。还可以加入引用来源、答案校验、二次审查模型和人工反馈机制。",
+    "key_points": ["提高检索质量", "上下文约束", "不确定时拒答", "引用来源", "二次校验", "人工反馈"],
+    "tags": ["幻觉", "RAG", "可靠性", "答案校验"]
+  },
+  {
+    "category": "system_design",
+    "position_tag": "ai_application",
+    "difficulty": "hard",
+    "question": "设计一个支持多租户的企业知识库 RAG 系统，需要注意哪些隔离问题？",
+    "reference_answer": "多租户 RAG 系统需要在数据、权限、检索和任务层面隔离。数据表应带 tenant_id，文档、chunk、题库和向量检索都必须按租户过滤；文件存储路径和对象存储也要隔离；Embedding 任务、检索接口和管理后台都要校验租户权限。还要防止 Prompt 注入导致跨租户泄露，并做好审计日志。",
+    "key_points": ["tenant_id", "数据隔离", "检索过滤", "权限校验", "文件隔离", "Prompt 注入防护", "审计日志"],
+    "tags": ["多租户", "RAG", "权限", "安全"]
+  },
+  {
+    "category": "technical",
+    "position_tag": "ai_application",
+    "difficulty": "medium",
+    "question": "什么是 Prompt 注入？在 RAG 场景中如何防护？",
+    "reference_answer": "Prompt 注入是指用户或文档内容中包含恶意指令，诱导模型忽略系统规则、泄露信息或执行不该执行的操作。在 RAG 中，恶意内容可能来自检索文档。防护方式包括明确系统指令优先级、把检索内容标记为不可信资料、禁止执行文档中的指令、对工具调用做权限控制、过滤敏感输出，并记录审计日志。",
+    "key_points": ["恶意指令", "系统指令优先级", "检索内容不可信", "工具权限控制", "敏感信息过滤", "审计"],
+    "tags": ["Prompt注入", "安全", "RAG", "Agent"]
+  },
+  {
+    "category": "project",
+    "position_tag": "ai_application",
+    "difficulty": "medium",
+    "question": "AI 面试项目中，为什么题库 RAG 比完全让大模型自由生成题目更可靠？",
+    "reference_answer": "题库 RAG 可以让题目来自经过维护的题库，包含参考答案、关键点、岗位标签和难度，出题更稳定，也便于评分。完全自由生成可能出现题目偏离岗位、难度不稳定、参考答案缺失或质量不可控。RAG 召回题库后再由大模型结合简历改写，可以兼顾稳定性和个性化。",
+    "key_points": ["题库可维护", "参考答案", "关键点", "难度稳定", "岗位匹配", "个性化改写"],
+    "tags": ["AI面试", "题库RAG", "出题", "可靠性"]
+  },
+  {
+    "category": "technical",
+    "position_tag": "ai_application",
+    "difficulty": "medium",
+    "question": "在调用大模型 API 时，如何控制成本和响应时间？",
+    "reference_answer": "可以通过减少无关上下文、控制 TopK、压缩历史对话、设置合理 max_tokens、选择合适模型、缓存重复请求、异步处理耗时任务等方式控制成本和响应时间。对于 RAG 场景，还要避免把过多 chunk 直接塞入 Prompt，可先重排或摘要，再传给模型。",
+    "key_points": ["控制上下文长度", "TopK", "max_tokens", "模型选择", "缓存", "异步任务", "rerank"],
+    "tags": ["LLM成本", "性能优化", "Token", "RAG"]
+  }
+]

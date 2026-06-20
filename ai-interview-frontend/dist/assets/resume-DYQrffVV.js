@@ -1,0 +1,1 @@
+import{l as a}from"./index-CrDEqPVH.js";function o(e,r){const t=new FormData;return t.append("file",e),t.append("target_position",r),a.post("/resumes/upload",t,{headers:{"Content-Type":"multipart/form-data"},timeout:12e4})}function u(e){return a.get(`/resumes/${e}`)}function n(){return a.get("/resumes")}export{n as a,u as g,o as u};

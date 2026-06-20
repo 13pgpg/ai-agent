@@ -1,0 +1,78 @@
+# 生产环境覆盖配置
+# 使用方式:
+# docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
+
+services:
+  app:
+    ports:
+      - "127.0.0.1:${API_PORT:-8001}:${API_PORT:-8001}"
+    environment:
+      - ENV=production
+    volumes:
+      - ./logs:/app/logs
+      - ./uploads:/app/uploads
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:${API_PORT:-8001}/api/v1/config/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  celery-worker:
+    environment:
+      - ENV=production
+    volumes:
+      - ./logs:/app/logs
+      - ./uploads:/app/uploads
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  celery-beat:
+    environment:
+      - ENV=production
+    volumes:
+      - ./logs:/app/logs
+      - ./celerybeat-schedule.db:/app/celerybeat-schedule.db
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5m"
+        max-file: "2"
+
+  postgres:
+    ports: []
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  redis:
+    ports: []
+    command: redis-server --appendonly yes
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5m"
+        max-file: "2"
+
+  nginx:
+    profiles:
+      - donotstart
+
+  flower:
+    ports:
+      - "127.0.0.1:${FLOWER_PORT:-5555}:5555"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5m"
+        max-file: "2"

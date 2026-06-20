@@ -1,0 +1,1 @@
+import{a as t}from"./request-Bx2weta5.js";function n(e){return t.post("/interviews/start",e)}function i(e,r){return t.post(`/interviews/${e}/answer`,{answer:r})}function a(e){return t.get(`/interviews/${e}/report`)}function o(e){return t.get(`/interviews/${e}/messages`)}function u(){return t.get("/interviews")}export{o as a,i as b,a as c,u as g,n as s};
